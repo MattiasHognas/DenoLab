@@ -1,0 +1,19 @@
+{
+	"$schema": "https://deno.land/x/denon@2.4.6/schema.json",
+	"env": {
+		"AUTHENTICATION_ENCRYPTION_KEY": "fORicUCzrnbQQd7XZScL"
+	},
+	"scripts": {
+		"start": {
+			"cmd": "deno run --allow-write --allow-env --allow-read --allow-net src/server.ts",
+			"desc": "run the server"
+		},
+		"test": {
+			"cmd": "deno test src/tests/**/*.ts",
+			"desc": "run the tests"
+		}
+	},
+	"watcher": {
+		"exts": ["js", "ts"]
+	}
+}
