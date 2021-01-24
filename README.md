@@ -1,12 +1,24 @@
 # Project
 
-Shared drawing microservice
+Shared drawing microservice using Deno, PostgreSQL, Vue
 
 ## Todo
 
 ### Technical fixes
 
-- Add jwt validation to Dashboard service
+- ~~Add dev-container~~
+- ~~Add docker setup~~
+- ~~Add authentication service~~
+- ~~Add dashboard service~~
+- ~~Add register to authentication service~~
+- ~~Add login to authentication service~~
+- ~~Add create dashboard to dashbaord service~~
+- ~~Add get dashboard to dashbaord service~~
+- ~~Add web client~~
+- Add web client register GUI
+- Add web client login GUI
+- Add web client logout GUI
+- Add web client dashboard GUI
 - Add e2e tests
 - Add Kafka pubsub on changes in services
 - Add websocket triggering on Kafka consumer
