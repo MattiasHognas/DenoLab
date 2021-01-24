@@ -1,6 +1,6 @@
 FROM debian:stable-slim
 
-ENV DENO_VERSION=1.6.3
+ENV DENO_VERSION=1.7.0
 
 # This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
 # property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
