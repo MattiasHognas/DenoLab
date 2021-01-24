@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+    denolab:
+        network_mode: host
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                VARIANT: '5.0-buster-slim'
+        init: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker-host.sock 
+            - ..:/workspace:cached
+        entrypoint: /usr/local/share/docker-init.sh
+        command: sleep infinity
