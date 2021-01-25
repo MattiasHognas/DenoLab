@@ -12,7 +12,6 @@
 		"ms-vscode-remote.remote-wsl",
 		"me-dutour-mathieu.vscode-github-actions",
 		"editorconfig.editorconfig",
-		"esbenp.prettier-vscode",
 		"irongeek.vscode-env",
 		"denoland.vscode-deno"
 	],
