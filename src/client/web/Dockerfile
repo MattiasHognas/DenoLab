@@ -1,15 +1,8 @@
-FROM hayd/alpine-deno:latest
+FROM nginx:stable-alpine
 
-EXPOSE 8001
+COPY /dist /usr/share/nginx/html
+COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /app
+EXPOSE 80
 
-USER deno
-
-COPY src/deps.ts .
-RUN deno cache deps.ts
-
-ADD src .
-RUN deno cache server.ts
-
-CMD ["run", "--allow-env", "--allow-net", "server.ts"]
+CMD ["nginx", "-g", "daemon off;"]
