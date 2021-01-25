@@ -13,3 +13,4 @@ export {
 	SQLite3Connector,
 } from "https://deno.land/x/denodb@v1.0.21/mod.ts";
 export { expect } from "https://deno.land/x/expect@v0.2.6/mod.ts";
+export * as log from "https://deno.land/std@0.84.0/log/mod.ts";

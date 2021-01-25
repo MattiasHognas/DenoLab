@@ -1,14 +1,15 @@
-import { Application } from "./deps.ts";
+import { Application, log } from "./deps.ts";
 import { router } from "./router.ts";
 import { createDatabaseConnection } from "./repository/db.ts";
 import { User } from "./repository/user.ts";
 
 createDatabaseConnection().link([User]);
 
-const app = new Application();
+const port: number = 8001;
+const app: Application = new Application();
 
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.listen({ port: 8001 });
-console.log("Started on port: 8001");
+app.listen({ port: port });
+log.info(`Started on port: ${port}`);
