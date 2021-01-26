@@ -1,6 +1,6 @@
 # Project
 
-Shared drawing microservice using Deno, PostgreSQL, Vue
+Shared drawing microservice using Deno, PostgreSQL, ReactJs
 
 ## Todo
 
