@@ -1,8 +1,21 @@
-FROM nginx:stable-alpine
+FROM hayd/deno:1.5.2
 
-COPY /dist /usr/share/nginx/html
-COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 8000
 
-EXPOSE 80
+WORKDIR /app
 
-CMD ["nginx", "-g", "daemon off;"]
+USER deno
+
+RUN deno install -A -f -n aleph https://deno.land/x/aleph/cli.ts
+RUN export PATH="/root/.deno/bin:$PATH"
+
+ADD components /app/components
+ADD pages /app/pages
+ADD public /app/public
+ADD style /app/style
+ADD aleph.config.ts /app/aleph.config.ts
+ADD app.tsx /app/app.tsx
+
+RUN aleph build
+
+CMD ["aleph", "start", "-p 8000"]
