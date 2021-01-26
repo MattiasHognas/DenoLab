@@ -12,5 +12,5 @@ export const dashboard = async (ctx: Context) => {
 	if (!dashboard) {
 		dashboard = await dataService.createDashboard(userId as number);
 	}
-	ctx.response.body = "Dashbaord id: " + dashboard.id;
+	ctx.response.body = { id: dashboard.id };
 };

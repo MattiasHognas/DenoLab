@@ -20,7 +20,6 @@ export const authMiddleware = async (
 		await next();
 		return;
 	}
-
 	ctx.response.status = 401;
 	ctx.response.body = { message: "Invalid jwt token" };
 };

@@ -5,6 +5,6 @@ import { authMiddleware } from "./authMiddleware.ts";
 const router = new Router();
 
 router
-	.post("login", "/dashboard", authMiddleware, dashboard)
+	.get("dashboard", "/dashboard", authMiddleware, dashboard)
 
 export { router };

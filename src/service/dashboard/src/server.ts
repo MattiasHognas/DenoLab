@@ -3,7 +3,9 @@ import { router } from "./router.ts";
 import { createDatabaseConnection } from "./repository/db.ts";
 import { Dashboard } from "./repository/dashboard.ts";
 
-createDatabaseConnection().link([Dashboard]);
+const db = createDatabaseConnection()
+db.link([Dashboard])
+db.sync();
 
 const port: number = 8001;
 const app: Application = new Application();
