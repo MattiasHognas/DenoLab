@@ -1,55 +1,39 @@
-FROM debian:stable-slim
+FROM mcr.microsoft.com/vscode/devcontainers/base:buster
 
-ENV DENO_VERSION=1.6.3
+ARG INSTALL_ZSH="true"
+ARG UPGRADE_PACKAGES="false"
+ARG ENABLE_NONROOT_DOCKER="true"
+ARG USE_MOBY="true"
 
-# This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
-# property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
-# will be updated to match your local UID/GID (when using the dockerFile property).
-# See https://aka.ms/vscode-remote/containers/non-root-user for details.
-ARG USERNAME=vscode
+ARG USERNAME=automatic
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-# Options for common package install script
-ARG INSTALL_ZSH="true"
-ARG UPGRADE_PACKAGES="true"
-ARG COMMON_SCRIPT_SOURCE="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/master/script-library/common-debian.sh"
-ARG COMMON_SCRIPT_SHA="dev-mode"
+COPY /library-scripts /tmp/library-scripts
 
-ARG DOCKER_SCRIPT_SOURCE="https://raw.githubusercontent.com/microsoft/vscode-dev-containers/master/script-library/docker-debian.sh"
-ARG DOCKER_SCRIPT_SHA="dev-mode"
-ARG DOCKER_ENABLE_NONROOT_DOCKER="true"
-ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
-ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
-ARG DOCKER_USERNAME="automatic"
-ARG DOCKER_USE_MOBY="true"
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" \
+    && /bin/bash /tmp/library-scripts/docker-debian.sh "${ENABLE_NONROOT_DOCKER}" "/var/run/docker-host.sock" "/var/run/docker.sock" "${USERNAME}" "${USE_MOBY}" \
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
 
-# Configure apt and install packages
-RUN apt-get update \
-     && export DEBIAN_FRONTEND=noninteractive \
-     #
-     # Verify git, common tools / libs installed, add/modify non-root user, optionally install zsh
-     && apt-get -y install --no-install-recommends curl ca-certificates 2>&1 unzip \
-     && curl -sSL  ${COMMON_SCRIPT_SOURCE} -o /tmp/common-setup.sh \
-     && ([ "${COMMON_SCRIPT_SHA}" = "dev-mode" ] || (echo "${COMMON_SCRIPT_SHA} */tmp/common-setup.sh" | sha256sum -c -)) \
-     && /bin/bash /tmp/common-setup.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" \
-     && rm /tmp/common-setup.sh \
-     # Install Docker
-     && curl -sSL  ${DOCKER_SCRIPT_SOURCE} -o /tmp/docker-setup.sh \
-     && ([ "${DOCKER_SCRIPT_SHA}" = "dev-mode" ] || (echo "${DOCKER_SCRIPT_SHA} */tmp/docker-setup.sh" | sha256sum -c -)) \
-     && /bin/bash /tmp/docker-setup.sh "${DOCKER_ENABLE_NONROOT_DOCKER}" "${DOCKER_SOURCE_SOCKET}" "${DOCKER_TARGET_SOCKET}" "${DOCKER_USERNAME}" "${DOCKER_USE_MOBY}" \
-     && rm /tmp/docker-setup.sh \
-     # Install Deno
-     && curl -fsSL https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip \
-     --output deno.zip \
-     && unzip deno.zip \
-     && rm deno.zip \
-     && chmod 777 deno \
-     && mv deno /usr/bin/deno \
-     # Clean up
-     && apt-get autoremove -y \
-     && apt-get clean -y \
-     && rm -rf /var/lib/apt/lists/* \
-     # Install Aleph
-     && deno install -A -f -n aleph https://deno.land/x/aleph@v0.2.28/cli.ts \
-     && export PATH="/root/.deno/bin:$PATH"
+# Deno
+ENV DENO_INSTALL=/deno
+RUN mkdir -p /deno \
+    && curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.6.3 \
+    && chown -R vscode /deno
+ENV PATH=${DENO_INSTALL}/bin:${PATH} \
+    DENO_DIR=${DENO_INSTALL}/.cache/deno
+
+# Aleph
+RUN deno install -A -f -n aleph https://deno.land/x/aleph@v0.2.28/cli.ts
+ENV PATH=/root/.deno/bin:${PATH}
+
+# Setting the ENTRYPOINT to docker-init.sh will configure non-root access to 
+# the Docker socket if "overrideCommand": false is set in devcontainer.json. 
+# The script will also execute CMD if you need to alter startup behaviors.
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
+
+# [Optional] Uncomment this section to install additional OS packages.
+# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+#     && apt-get -y install --no-install-recommends <your-package-list-here>
